@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ro" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08.11 — Unde mergem mâine?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Script pentru trimiterea automată a emailului -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // Aici poți pune cheia publică de la EmailJS (gratuit pe emailjs.com)
+            emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        sand: '#DDD0BE',
+                        sandDeep: '#D1C1AC',
+                        linen: '#ECE2D2',
+                        linenSelected: '#F3EBDD',
+                        clay: '#E6D9C6',
+                        stoneBorder: '#C7B7A1',
+                        espresso: '#2B1B18',
+                        espressoDeep: '#241715',
+                        champagne: '#F3EAE0',
+                        champagneMuted: '#C9B9A6',
+                        ink: '#231916',
+                        muted: '#69584F',
+                        terracotta: '#943D2C',
+                        terracottaHover: '#7B3021',
+                        goldAccent: '#C88A65'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #DDD0BE;
+            background-image: 
+                radial-gradient(at 15% 10%, rgba(148, 61, 44, 0.06) 0px, transparent 50%),
+                radial-gradient(at 85% 90%, rgba(43, 27, 24, 0.08) 0px, transparent 55%);
+            color: #231916;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .editorial-card {
+            background-color: #ECE2D2;
+            border: 1px solid #C7B7A1;
+            transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .editorial-card:hover {
+            border-color: #9E8B74;
+            box-shadow: 0 12px 28px -10px rgba(43, 27, 24, 0.14);
+        }
+
+        .editorial-card:hover .card-image {
+            transform: scale(1.02);
+        }
+
+        .card-image {
+            transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .selected-indicator {
+            border: 2px solid #943D2C !important;
+            background-color: #F3EBDD !important;
+            box-shadow: 0 14px 30px -8px rgba(148, 61, 44, 0.22);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #D1C1AC;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9E8B74;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen pb-36 selection:bg-terracotta selection:text-champagne">
+
+    <header class="bg-espresso text-champagne border-b border-[#422C27]">
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 py-9 sm:py-12">
+            <span class="font-serif italic text-xl sm:text-2xl text-goldAccent tracking-wide block mb-2">08.11</span>
+            <h1 class="font-serif text-4xl sm:text-6xl font-normal tracking-tight text-champagne leading-[1.06]">
+                Unde ieșim mâine?
+            </h1>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-5 sm:px-8 pt-10 sm:pt-14">
+        <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+        </div>
+    </main>
+
+    <!-- Fereastra modală pentru detalii -->
+    <div
+        id="detailModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 bg-espressoDeep/80 backdrop-blur-[2px] opacity-0 transition-opacity duration-200"
+    >
+        <div
+            id="modalBox"
+            class="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-clay border border-stoneBorder rounded-md p-6 sm:p-10 shadow-2xl"
+        >
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-stoneBorder">
+                <span id="modalNumber" class="font-serif italic text-xl text-terracotta font-semibold">01</span>
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="text-xs uppercase tracking-[0.15em] text-muted hover:text-ink py-1.5 px-3 border border-stoneBorder rounded transition"
+                >
+                    Închide [×]
+                </button>
+            </div>
+
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Bara de jos pentru confirmarea alegerii -->
+    <div
+        id="selectionBar"
+        class="fixed bottom-0 left-0 right-0 z-40 bg-espressoDeep text-champagne border-t border-[#47302B] translate-y-full transition-transform duration-300 shadow-2xl"
+    >
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <span class="text-[11px] uppercase tracking-[0.16em] text-goldAccent block">08.11</span>
+                <p id="selectedTitleDisplay" class="font-serif text-xl sm:text-2xl text-champagne font-normal">—</p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <span id="statusMessage" class="text-xs text-goldAccent hidden">
+                    Se trimite...
+                </span>
+                <button
+                    type="button"
+                    onclick="trimiteAutomat()"
+                    id="confirmButton"
+                    class="w-full sm:w-auto px-6 py-3 bg-terracotta hover:bg-terracottaHover text-champagne text-xs uppercase tracking-[0.16em] rounded transition font-medium"
+                >
+                    Confirm această alegere
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const POZE = {
+            sensorica: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrKli6i5ro2UAhF6qYcxu2RQvdw_Hp7EnAkp7heYS33w&s=10",
+            teatru: "https://files.iticket.md/events/24024/24024-4I8Fog6ootrwDucm.webp",
+            badanta: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-trZsFNK4GeY78ZUFndurj1TGBWc7N_IlvS7022WyFA&s=10",
+            muzeu1: "https://visit.chisinau.md/wp-content/uploads/2021/09/23-2.jpg",
+            muzeu2: "https://www.fest.md/files/places/2/image_220_2_large.jpg"
+        };
+
+        const OPTIONS = [
+            {
+                id: 'sensorica',
+                number: '01',
+                title: 'Sensorica',
+                subtitle: 'Immersive art museum — instalațiile „Origins” și „Japan Dreams”, sensorica.md',
+                images: [POZE.sensorica],
+                paragraphs: [
+                    'Immersive art museum — instalațiile „Origins” (9 installations) și „Japan Dreams” (17 installations), sensorica.md.'
+                ]
+            },
+            {
+                id: 'visul',
+                number: '02',
+                title: 'VISUL UNEI NOPȚI DE VARĂ - comedie',
+                subtitle: '8/11 - 17:30 · Regia: Nikita Betehtin · Scenografia și costumele: Denis Sazonov · După motive din piesa lui William Shakespeare',
+                images: [POZE.teatru],
+                paragraphs: [
+                    'Visul unei nopți de vară – clasică a literaturii mondiale, povestește despre o tânără generație de creatori de teatru care caută noi căi între fantezie și realitate. Granițele dintre vise și realitate se estompează pe măsură ce patru tineri fug de greutățile lumii reale: război, violență, presiune socială. Ei caută refugiu într-o pădure mică - un loc al iluziilor și al pierderii controlului.',
+                    'Acolo intră sub influența unei puteri misterioase - o poțiune de dragoste misterioasă dezlănțuie haosul. Dragostea nu apare ca o emoție blândă, ci ca o forță sălbatică, de neoprit, care distruge orice ordine. Producția pune întrebarea: Cât de mult din dragostea noastră este cu adevărat gratuită?',
+                    'Pădurea devine un loc de rezistență – dar și o oglindă a abisurilor interioare. Dragostea ca iluzie salvatoare – sau o aberație periculoasă?',
+                    'Durata spectacolului: 2h 40 minute, cu pauză 15 minute.'
+                ]
+            },
+            {
+                id: 'badanta',
+                number: '03',
+                title: 'Badanta',
+                subtitle: 'Comedie marca Zebra Show și 609 Film, N-15',
+                images: [POZE.badanta],
+                paragraphs: [
+                    'Comedie marca Zebra Show și 609 Film, N-15.'
+                ]
+            },
+            {
+                id: 'etnografie',
+                number: '04',
+                title: 'Muzeul de etnografie',
+                subtitle: 'Muzeul Național de Etnografie și Istorie Naturală',
+                images: [POZE.muzeu1, POZE.muzeu2],
+                paragraphs: [
+                    'Muzeul Național de Etnografie și Istorie Naturală.'
+                ]
+            }
+        ];
+
+        let selectedOptionId = null;
+        let museumCardPhotoIndex = 0;
+
+        function renderGrid() {
+            const container = document.getElementById('optionsGrid');
+
+            container.innerHTML = OPTIONS.map((item) => {
+                const isSelected = selectedOptionId === item.id;
+                const hasTwoPhotos = item.images.length > 1;
+                const currentImgSrc = hasTwoPhotos ? item.images[museumCardPhotoIndex] : item.images[0];
+
+                return `
+                <article
+                    onclick="openModal('${item.id}')"
+                    class="editorial-card cursor-pointer rounded-md p-5 sm:p-6 flex flex-col justify-between ${isSelected ? 'selected-indicator' : ''}"
+                >
+                    <div>
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-stoneBorder">
+                            <span class="font-serif italic text-xl text-terracotta font-semibold">${item.number}</span>
+                            ${hasTwoPhotos ? `
+                                <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+                                    <button
+                                        type="button"
+                                        onclick="switchMuseumPhoto(0)"
+                                        class="w-7 h-7 text-xs rounded border transition ${museumCardPhotoIndex === 0 ? 'bg-espresso text-champagne border-espresso' : 'border-stoneBorder text-muted hover:text-ink'}"
+                                    >1</button>
+                                    <button
+                                        type="button"
+                                        onclick="switchMuseumPhoto(1)"
+                                        class="w-7 h-7 text-xs rounded border transition ${museumCardPhotoIndex === 1 ? 'bg-espresso text-champagne border-espresso' : 'border-stoneBorder text-muted hover:text-ink'}"
+                                    >2</button>
+                                </div>
+                            ` : `
+                                <span class="text-[11px] uppercase tracking-[0.15em] ${isSelected ? 'text-terracotta font-semibold' : 'text-muted'}">
+                                    ${isSelected ? '✓ Ales' : 'Detalii'}
+                                </span>
+                            `}
+                        </div>
+
+                        <div class="relative w-full aspect-[16/10] overflow-hidden rounded bg-espresso mb-4 border border-stoneBorder">
+                            <img
+                                src="${currentImgSrc}"
+                                alt="${item.title}"
+                                class="card-image w-full h-full object-cover"
+                            >
+                        </div>
+
+                        <h2 class="font-serif text-2xl sm:text-3xl text-ink font-semibold leading-snug mb-1.5">
+                            ${item.title}
+                        </h2>
+                        <p class="text-xs sm:text-sm text-muted mb-6">
+                            ${item.subtitle}
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-stoneBorder flex items-center justify-between" onclick="event.stopPropagation()">
+                        <button
+                            type="button"
+                            onclick="openModal('${item.id}')"
+                            class="text-xs uppercase tracking-[0.14em] text-muted hover:text-ink font-medium transition"
+                        >
+                            Descriere
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="selectOption('${item.id}')"
+                            class="px-4 py-2 text-xs uppercase tracking-[0.14em] rounded border font-medium transition ${
+                                isSelected
+                                    ? 'bg-terracotta text-champagne border-terracotta'
+                                    : 'border-espresso text-espresso hover:bg-espresso hover:text-champagne'
+                            }"
+                        >
+                            ${isSelected ? 'Selectat' : 'Aleg această variantă'}
+                        </button>
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+
+        function switchMuseumPhoto(index) {
+            museumCardPhotoIndex = index;
+            renderGrid();
+        }
+
+        function openModal(optionId) {
+            const item = OPTIONS.find(o => o.id === optionId);
+            if (!item) return;
+
+            document.getElementById('modalNumber').textContent = item.number;
+            const isSelected = selectedOptionId === item.id;
+
+            const imagesHtml = item.images.length > 1
+                ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    ${item.images.map((imgSrc, idx) => `
+                        <div class="aspect-[4/3] bg-espresso rounded overflow-hidden border border-stoneBorder">
+                            <img src="${imgSrc}" alt="${item.title} ${idx + 1}" class="w-full h-full object-cover">
+                        </div>
+                    `).join('')}
+                   </div>`
+                : `<div class="w-full aspect-[16/10] bg-espresso rounded overflow-hidden mb-6 border border-stoneBorder">
+                       <img src="${item.images[0]}" alt="${item.title}" class="w-full h-full object-cover">
+                   </div>`;
+
+            const paragraphsHtml = item.paragraphs.length > 0
+                ? `<div class="space-y-4 mb-8 pt-4 border-t border-stoneBorder">
+                    ${item.paragraphs.map(p => `<p class="text-sm sm:text-base text-ink leading-relaxed">${p}</p>`).join('')}
+                   </div>`
+                : '';
+
+            document.getElementById('modalContent').innerHTML = `
+                <h3 class="font-serif text-3xl sm:text-4xl text-ink font-semibold mb-1.5">
+                    ${item.title}
+                </h3>
+                <p class="text-xs sm:text-sm text-muted mb-6">
+                    ${item.subtitle}
+                </p>
+
+                ${imagesHtml}
+                ${paragraphsHtml}
+
+                <div class="pt-5 border-t border-stoneBorder flex items-center justify-end gap-4">
+                    <button
+                        type="button"
+                        onclick="closeModal()"
+                        class="px-4 py-2.5 text-xs uppercase tracking-[0.14em] text-muted hover:text-ink transition"
+                    >
+                        Înapoi
+                    </button>
+                    <button
+                        type="button"
+                        onclick="selectOption('${item.id}'); closeModal();"
+                        class="px-6 py-2.5 bg-terracotta hover:bg-terracottaHover text-champagne text-xs uppercase tracking-[0.14em] rounded font-medium transition"
+                    >
+                        ${isSelected ? 'Selectat' : 'Aleg această variantă'}
+                    </button>
+                </div>
+            `;
+
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+            });
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') closeModal();
+        });
+
+        function selectOption(optionId) {
+            selectedOptionId = optionId;
+            const item = OPTIONS.find(o => o.id === optionId);
+
+            renderGrid();
+
+            const bar = document.getElementById('selectionBar');
+            const titleDisplay = document.getElementById('selectedTitleDisplay');
+
+            titleDisplay.textContent = `${item.number} — ${item.title}`;
+            bar.classList.remove('translate-y-full');
+        }
+
+        function trimiteAutomat() {
+            if (!selectedOptionId) return;
+            const item = OPTIONS.find(o => o.id === selectedOptionId);
+            
+            const statusMsg = document.getElementById('statusMessage');
+            const btn = document.getElementById('confirmButton');
+            
+            statusMsg.classList.remove('hidden');
+            statusMsg.textContent = "Se trimite...";
+            btn.disabled = true;
+
+            // Parametrii trimisi prin EmailJS (necesită cont gratuit pe emailjs.com)
+            const templateParams = {
+                to_name: "Tine",
+                choice_title: item.title,
+                choice_number: item.number,
+                date: "08.11"
+            };
+
+            // Înlocuiește "YOUR_SERVICE_ID" și "YOUR_TEMPLATE_ID" cu datele tale de pe EmailJS
+            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", templateParams)
+                .then(function(response) {
+                    statusMsg.textContent = "Trimis cu succes! Gata, a aflat.";
+                    btn.textContent = "Confirmat ✓";
+                }, function(error) {
+                    statusMsg.textContent = "Eroare la trimitere.";
+                    btn.disabled = false;
+                });
+        }
+
+        window.onload = function () {
+            renderGrid();
+        };
+    </script>
+</body>
+</html>
