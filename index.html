@@ -6,13 +6,7 @@
     <title>08.11 — Unde mergem mâine?</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Script pentru trimiterea automată a emailului -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // Aici poți pune cheia publică de la EmailJS (gratuit pe emailjs.com)
-            emailjs.init("YOUR_PUBLIC_KEY");
-        })();
-    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -379,18 +373,20 @@
             if (e.target.id === 'detailModal') closeModal();
         });
 
-        function selectOption(optionId) {
-            selectedOptionId = optionId;
-            const item = OPTIONS.find(o => o.id === optionId);
+  function selectOption(optionId) {
+    const item = OPTIONS.find(o => o.id === optionId);
 
-            renderGrid();
+    const mesaj = `Am ales ${item.title} pentru mâine ❤️`;
 
-            const bar = document.getElementById('selectionBar');
-            const titleDisplay = document.getElementById('selectedTitleDisplay');
+    const numarWhatsApp = "37379688490"; // Pune numărul tău
 
-            titleDisplay.textContent = `${item.number} — ${item.title}`;
-            bar.classList.remove('translate-y-full');
-        }
+    const link = `https://wa.me/${numarWhatsApp}?text=${encodeURIComponent(mesaj)}`;
+
+    window.open(link, "_blank");
+
+    selectedOptionId = optionId;
+    renderGrid();
+}
 
         function trimiteAutomat() {
             if (!selectedOptionId) return;
